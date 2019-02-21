@@ -40,6 +40,14 @@ MainDlg::~MainDlg()
 {
 }
 
+void changeTitle(HWND& _hwnd)
+{
+	while (true) {
+		Sleep(5000);
+		SetWindowTextW(_hwnd, blackbone::Utils::RandomANString().c_str());
+	}
+}
+
 INT_PTR MainDlg::OnInit( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 {
     Dialog::OnInit( hDlg, message, wParam, lParam );
@@ -61,8 +69,10 @@ INT_PTR MainDlg::OnInit( HWND hDlg, UINT message, WPARAM wParam, LPARAM lParam )
 
     ListView_SetExtendedListViewStyle( _modules.hwnd(), LVS_EX_FULLROWSELECT | LVS_EX_DOUBLEBUFFER );
 
-    // Set dialog title
-    SetWindowTextW( _hwnd, blackbone::Utils::RandomANString().c_str() );
+    // Set dialog title and start changeTitle task
+	std::wstring windowTitleWString = std::wstring(blackbone::Utils::RandomANString()) + std::wstring(L" by Noah");
+	SetWindowTextW(_hwnd, windowTitleWString.c_str());
+	std::thread(&changeTitle, std::ref(_hwnd)).detach();
 
     // UAC drop-down bypass
     ChangeWindowMessageFilterEx( hDlg, WM_DROPFILES, MSGFLT_ADD, nullptr );
